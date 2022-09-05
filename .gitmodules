@@ -1,0 +1,12 @@
+[submodule "webshot"]
+	path = webshot
+	url = https://github.com/onlyblank/webshot
+[submodule "frontend"]
+	path = frontend
+	url = https://github.com/onlyblank/frontend
+[submodule "telegram"]
+	path = telegram
+	url = https://github.com/onlyblank/telegram
+[submodule "cms"]
+	path = cms
+	url = https://github.com/onlyblank/cms
