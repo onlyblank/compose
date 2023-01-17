@@ -1,0 +1,86 @@
+
+Table "users" {
+  "id" INT [pk]
+  "email" TEXT [unique]
+  "password" TEXT
+  "first_name" TEXT
+  "last_name" TEXT
+}
+
+// Tasks
+Table "tasks" {
+  "id" INT [pk]
+  "answer" TEXT
+}
+
+Table "task_block_texts" {
+  "id" INT [pk]
+  "task_id" INT [ref: > tasks.id]
+  "order" INT
+  
+  "text" TEXT
+}
+
+Table "task_block_images" {
+  "id" INT [pk]
+  "task_id" INT [ref: > tasks.id]
+  "order" INT
+    
+  "image_url" TEXT
+}
+
+Table "task_block_codes" {
+  "id" INT [pk]
+  "task_id" INT [ref: > tasks.id]
+  "order" INT
+  
+  "code" TEXT
+  "language" TEXT
+}
+
+// Courses
+Table "courses" {
+  "id" INT [pk]
+  "name" TEXT
+}
+
+Table "course_teachers" {
+  "id" INT [pk]
+  "user_id" INT [ref: < users.id]
+  "course_id" INT [ref: < courses.id]
+}
+
+Table "course_students" {
+  "id" INT [pk]
+  "user_id" INT [ref: < users.id]
+  "course_id" INT [ref: < courses.id]
+}
+
+// Tests
+Table tests {
+  "id" INT [pk]
+  "name" TEXT
+  "owner_id" INT [ref: < users.id]
+}
+
+Table test_tasks {
+  "test_id" INT [ref: - tests.id]
+  "task_id" INT [ref: - tasks.id]
+  "score" INT
+  "order" INT
+}
+
+Table assignments {
+  "id" INT [pk]
+  "test_id" INT [ref: - tests.id]
+  "course_id" INT [ref: - courses.id]
+  "time_limit" INT
+}
+
+Table task_answer {
+  "id" INT [pk]
+  "assignment_id" INT [ref: - assignments.id]
+  "student_id" INT [ref: - users.id]
+  "task_id" INT [ref: - tasks.id]
+  "answer" TEXT
+}
