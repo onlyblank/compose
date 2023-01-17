@@ -1,8 +1,6 @@
 version: "3.8"
 
 services:
-  # webshot:
-  #   build: ./webshot
   database:
     image: postgres:14.5
     shm_size: 128mb
@@ -16,8 +14,6 @@ services:
     image: node:16-alpine3.16
     ports:
       - "1337:1337"
-    volumes:
-      - "./cms:/app"
     env_file:
       - ./.env
     environment:
@@ -25,5 +21,18 @@ services:
       HOST: 0.0.0.0
       PORT: 1337
       APP_KEYS: "toBeModified1,toBeModified2"
+    volumes:
+      - "./cms:/app"
+    working_dir: /app
+    command: sh -c "cd /app; npm install --platform=linuxmusl; npm run develop"
+
+  telegram:
+    image: node:16-alpine3.16
+    ports:
+      - "8081:8081"
+    environment:
+      PORT: 8081
+    volumes:
+      - "./telegram:/app"
     working_dir: /app
     command: sh -c "cd /app; npm install --platform=linuxmusl; npm run develop"
