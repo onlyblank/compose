@@ -7,13 +7,14 @@ services:
     volumes:
       - ./data/postgresql:/var/lib/postgresql/data
     ports:
-      - "5433:5432"
+      - "${DATABASE_PORT}:5432"
     env_file:
       - ./.env
+
   cms:
     image: node:16-alpine3.16
     ports:
-      - "1337:1337"
+      - "${STRAPI_PORT}:1337"
     env_file:
       - ./.env
     environment:
@@ -21,20 +22,77 @@ services:
       HOST: 0.0.0.0
       PORT: 1337
       APP_KEYS: "toBeModified1,toBeModified2"
+      JWT_SECRET: tobemodified19q87f6dgowo876hfg
+      ADMIN_JWT_SECRET: tobemodifiedsa87ch0q8w7ghf08we7y
+      API_TOKEN_SALT: toBeModified
+      TRANSFER_TOKEN_SALT: toBeModified
+      WEBSHOT_ENDPOINT: http://webshot:8081/screenshot
+      FRONTEND_ENDPOINT: http://frontend:80
+
+      DATABASE_HOST: database
+      DATABASE_PORT: 5432
+      DATABASE_NAME: ${POSTGRES_DB}
+      DATABASE_USERNAME: ${POSTGRES_USER}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - "./cms:/app"
     working_dir: /app
     command: sh -c "cd /app; npm install --platform=linuxmusl; npm run develop"
+    depends_on:
+    - database
+
+  # admin_panel:
+  #   image: node:16-alpine3.16
+  #   ports:
+  #     - "${ADMIN_PANEL_PORT}:8001"
+  #   env_file:
+  #     - ./.env
+  #   environment:
+  #     NODE_ENV: development
+  #     PORT: 8001
+  #     REACT_APP_CMS_API_ENDPOINT: http://localhost:${STRAPI_PORT} # without `/api`
+  #     WATCHPACK_POLLING: true
+
+  #   volumes:
+  #     - "./admin-panel:/app"
+  #   working_dir: /app
+  #   command: sh -c "cd /app; npm install --platform=linuxmusl; npm run develop"
+  #   depends_on:
+  #   - cms
 
   telegram:
     image: node:16-alpine3.16
     ports:
-      - "8081:8081"
+      - "${TELEGRAM_PORT}:8081"
     env_file:
       - ./telegram/.env
     environment:
       PORT: 8081
+      API_ENDPOINT: http://cms:${STRAPI_PORT}/api
     volumes:
       - "./telegram:/app"
     working_dir: /app
     command: sh -c "cd /app; npm install --platform=linuxmusl; npm run develop"
+    depends_on:
+    - cms
+
+  webshot:
+    ports:
+      - "${WEBSHOT_PORT}:8081"
+    environment:
+      PORT: 8081
+    build: ./webshot
+
+  frontend:
+    ports:
+      - "${FRONTEND_PORT}:80"
+    environment:
+      PORT: 80
+      # REACT_APP_CMS_API_ENDPOINT: http://cms:${STRAPI_PORT}/api
+      REACT_APP_CMS_API_ENDPOINT: http://localhost:${STRAPI_PORT}/api
+    build: ./frontend
+
+networks:
+  strapi:
+    name: Strapi
+    driver: bridge
