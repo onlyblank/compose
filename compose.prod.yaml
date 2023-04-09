@@ -1,0 +1,89 @@
+version: "3.8"
+
+name: "blank-production"
+
+services:
+  database:
+    image: postgres:14.5
+    shm_size: 128mb
+    volumes:
+      - ./data/postgresql:/var/lib/postgresql/data
+    # ports:
+    #   - "${DATABASE_PORT}:5432"
+    env_file:
+      - ./.env
+
+  cms:
+    ports:
+      - "${STRAPI_PORT}:1337"
+    env_file:
+      - ./.env
+    volumes:
+      - "./cms/public:/app/public"
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 1337
+      APP_KEYS: "toBeModified1,toBeModified2"
+      JWT_SECRET: tobemodified19q87f6dgowo876hfg
+      ADMIN_JWT_SECRET: tobemodifiedsa87ch0q8w7ghf08we7y
+      API_TOKEN_SALT: toBeModified
+      TRANSFER_TOKEN_SALT: toBeModified
+      WEBSHOT_ENDPOINT: http://webshot:8081/screenshot
+      FRONTEND_ENDPOINT: http://frontend:80
+
+      DATABASE_HOST: database
+      DATABASE_PORT: 5432
+      DATABASE_NAME: ${POSTGRES_DB}
+      DATABASE_USERNAME: ${POSTGRES_USER}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+    build: ./cms
+    depends_on:
+    - database
+
+  webshot:
+    ports:
+      - "${WEBSHOT_PORT}:8081"
+    environment:
+      PORT: 8081
+    build: ./webshot
+
+  frontend:
+    ports:
+      - "${FRONTEND_PORT}:80"
+    environment:
+      PORT: 80
+      # React не сможет получить переменную во время сборки. Явно прописал в Dockerfile
+      # REACT_APP_CMS_API_ENDPOINT: http://cms:${STRAPI_PORT}/api
+    build: ./frontend
+  
+  telegram:
+    ports:
+      - "${TELEGRAM_PORT}:8081"
+    env_file:
+      - ./telegram/.env
+    environment:
+      PORT: 8081
+      API_ENDPOINT: http://cms:${STRAPI_PORT}/api
+    build: ./telegram
+    depends_on:
+    - cms
+
+  vk:
+    ports:
+      - "${VK_PORT}:3003"
+    env_file:
+      - ./vk/.env
+    environment:
+      NODE_ENV: development
+      PORT: 3003
+      API_VERSION: 5.131
+      API_URL: http://cms:${STRAPI_PORT}/api
+    build: ./vk
+    depends_on:
+    - cms
+
+networks:
+  strapi:
+    name: Strapi
+    driver: bridge

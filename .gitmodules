@@ -10,3 +10,6 @@
 [submodule "cms"]
 	path = cms
 	url = https://github.com/onlyblank/cms
+[submodule "vk"]
+	path = vk
+	url = https://github.com/onlyblank/vk.git

@@ -76,6 +76,24 @@ services:
     command: sh -c "cd /app; npm install; npm run develop"
     depends_on:
     - cms
+  
+  vk:
+    image: node:16-alpine3.16
+    ports:
+      - "${VK_PORT}:3003"
+    env_file:
+      - ./vk/.env
+    environment:
+      NODE_ENV: development
+      PORT: 3003
+      API_VERSION: 5.131
+      API_URL: http://cms:${STRAPI_PORT}/api
+    volumes:
+      - "./vk:/app"
+    working_dir: /app
+    command: sh -c "cd /app; npm install; npm run develop"
+    depends_on:
+    - cms
 
   webshot:
     ports:
