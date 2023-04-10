@@ -1,15 +1,15 @@
 [submodule "webshot"]
 	path = webshot
-	url = https://github.com/onlyblank/webshot
+	url = ssh://git@github.com:onlyblank/webshot.git
 [submodule "frontend"]
 	path = frontend
-	url = https://github.com/onlyblank/frontend
+	url = ssh://git@github.com:onlyblank/frontend.git
 [submodule "telegram"]
 	path = telegram
-	url = https://github.com/onlyblank/telegram
+	url = ssh://git@github.com:onlyblank/telegram.git
 [submodule "cms"]
 	path = cms
-	url = https://github.com/onlyblank/cms
+	url = ssh://git@github.com:onlyblank/cms.git
 [submodule "vk"]
 	path = vk
-	url = https://github.com/onlyblank/vk.git
+	url = ssh://git@github.com:onlyblank/vk.git
