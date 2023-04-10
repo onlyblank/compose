@@ -29,6 +29,7 @@ services:
       TRANSFER_TOKEN_SALT: toBeModified
       WEBSHOT_ENDPOINT: http://webshot:8081/screenshot
       FRONTEND_ENDPOINT: http://frontend:80
+      VK_BOT_URL: http://vk:3003
 
       DATABASE_HOST: database
       DATABASE_PORT: 5432
@@ -58,7 +59,7 @@ services:
       - ./telegram/.env
     environment:
       PORT: 8081
-      API_ENDPOINT: http://cms:${STRAPI_PORT}/api
+      API_ENDPOINT: http://cms:1337/api
     build: ./telegram
     depends_on:
     - cms
@@ -72,7 +73,7 @@ services:
       NODE_ENV: development
       PORT: 3003
       API_VERSION: 5.131
-      API_URL: http://cms:${STRAPI_PORT}/api
+      API_URL: http://cms:1337/api
     build: ./vk
     depends_on:
     - cms
